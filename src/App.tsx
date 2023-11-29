@@ -1,93 +1,83 @@
-import React, { useReducer, ChangeEvent } from 'react';
+// import React, { useEffect, useState, useMemo } from "react";
+// import axios from "axios";
 
-interface Todos {
-  id: number;
-  text: string;
+// function ProductList() {
+//   // State for storing the product list
+//   const [products, setProducts] = useState([]);
+//   // State for tracking any relevant dependencies for memoization
+//   const [dependency, setDependency] = useState(0);
+
+//   // Define a memoized function for fetching the product list
+//   const fetchProductList = useMemo(() => {
+//     console.log("test");
+//     return async () => {
+//       try {
+//         console.log("test useMemo");
+
+//         const response = await axios.get(
+//           "https://jsonplaceholder.typicode.com/posts"
+//         ); // Replace with your API endpoint
+//         setProducts(response.data);
+//       } catch (error) {
+//         console.error("Error fetching product list:", error);
+//       }
+//     };
+//   }, [dependency]);
+
+//   var fetch = () => {
+//     console.log();
+//   };
+//   useEffect(() => {
+//     fetchProductList();
+//     console.log("test useEffect");
+//     fetch();
+//   }, []);
+
+//   return (
+//     <div>
+//       <h1>Product List</h1>
+//       <ul>
+//         {products.map((product: any) => (
+//           <li key={product.id}>{product.title}</li>
+//         ))}
+//       </ul>
+//       <button onClick={() => setDependency(dependency + 1)}>
+//         Click to Refresh Product List
+//       </button>
+//     </div>
+//   );
+// }
+
+// export default ProductList;
+
+import { useMemo, useState } from "react";
+
+let count = 0;
+function someExpensiveFunction(n: number) {
+  console.log("Hello ");
+  count++;
+  return n * n;
 }
-
-interface State {
-  draft: string;
-  todos: Todos[];
-}
-
-interface Action {
-  type: 'changed_draft' | 'added_todo';
-  nextDraft?: string;
-}
-
-interface TodoListProps {
-  username: string;
-}
-
-function createInitialState(username: string): State {
-  const initialTodos: Todos[] = [];
-  for (let i = 0; i < 10; i++) {
-    initialTodos.push({
-      id: i,
-      text: `${username}'s task #${i + 1}`,
-    });
-  }
-  return {
-    draft: '',
-    todos: initialTodos,
-  };
-}
-
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case 'changed_draft':
-      return {
-        draft: action.nextDraft || '',
-        todos: state.todos,
-      };
-    case 'added_todo':
-      return {
-        draft: '',
-        todos: [
-          {
-            id: state.todos.length,
-            text: state.draft,
-          },
-          ...state.todos,
-        ],
-      };
-    default:
-      throw new Error('Unknown action: ' + action.type);
-  }
-}
-
-const TodoList: React.FC<TodoListProps> = ({ username }) => {
-  const [state, dispatch] = useReducer(
-    reducer,
-    username,
-    createInitialState
+export default function myFunction() {
+  const [cnt, setCnt] = useState(5);
+  const result = useMemo(
+    () => (cnt: number) => {
+      console.log("hello here ");
+      return someExpensiveFunction(cnt);
+    },
+    [cnt]
   );
-
-  const handleDraftChange = (e: ChangeEvent<HTMLInputElement>) => {
-    dispatch({
-      type: 'changed_draft',
-      nextDraft: e.target.value,
-    });
-  };
-
-  const handleAddTodo = () => {
-    dispatch({ type: 'added_todo' });
-  };
-
+  let res = 0;
+  let t = 100;
+  while (t--) {
+    res = result(cnt);
+  }
+  console.log(count);
   return (
     <>
-      <input
-        value={state.draft}
-        onChange={handleDraftChange}
-      />
-      <button onClick={handleAddTodo}>Add</button>
-      <ul>
-        {state.todos.map(item => (
-          <li key={item.id}>{item.text}</li>
-        ))}
-      </ul>
+      <div>{res}</div>
+      <button onClick={() => setCnt(cnt + 1)}>+</button>
+      <button onClick={() => setCnt(cnt - 1)}>-</button>
     </>
   );
-};
-
-export default TodoList;
+}
